@@ -1,37 +1,35 @@
-import { StatusBar } from "expo-status-bar";
-import { useState, useEffect, useCallback } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import Total from "./Total";
+import * as SplashScreen from "expo-splash-screen";
+import { useCallback, useEffect, useState } from "react";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [numSandwiches, setNumSandwiches] = useState(0);
-  const [numWater, setNumWater] = useState(0);
+  const [appIsLoaded, setAppIsLoaded] = useState(false);
 
-  const sandwichPrice = 5;
+  useEffect(() => {
+    //load fonts
+    setTimeout(() => {
+      console.log("Setting app is loaded");
+      setAppIsLoaded(true);
+    }, 2000);
+  });
 
-  const addSandwich = () => {
-    setNumSandwiches((numSandwiches) => numSandwiches + 1);
-  };
+  const onLayout = useCallback(async () => {
+    if (appIsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsLoaded]);
 
-  const addWater = () => {
-    setNumWater((numWater) => numWater + 1);
-  };
-
-  const getTotal = useCallback(() => {
-    return numSandwiches * sandwichPrice;
-  }, [numSandwiches]);
+  if (!appIsLoaded) {
+    return null;
+  }
 
   return (
-    <SafeAreaProvider style={styles.container}>
+    <SafeAreaProvider style={styles.container} onLayout={onLayout}>
       <SafeAreaView>
-        <Text style={styles.label}>{"Sandwiches: " + numSandwiches}</Text>
-        <Button title="Add sandwich" onPress={addSandwich} />
-
-        <Text style={styles.label}>{"Water: " + numWater}</Text>
-        <Button title="Add water" onPress={addWater} />
-
-        <Total getTotal={getTotal} />
+        <Text style={styles.label}>Hi everyone!</Text>
       </SafeAreaView>
     </SafeAreaProvider>
   );
